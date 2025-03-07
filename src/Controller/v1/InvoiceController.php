@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class InvoiceController.
@@ -47,6 +48,7 @@ class InvoiceController extends AbstractController
      * @var SerializerInterface
      */
     private $serializer;
+    private $requestStack; // <-- Agregar esta propiedad
 
     /**
      * InvoiceController constructor.
@@ -55,13 +57,25 @@ class InvoiceController extends AbstractController
      * @param ConfigProviderInterface $fileProvider
      * @param SerializerInterface $serializer
      */
-    public function __construct(DocumentRequestInterface $document, ConfigProviderInterface $config, ConfigProviderInterface $fileProvider, SerializerInterface $serializer)
+    public function __construct(DocumentRequestInterface $document, ConfigProviderInterface $config, ConfigProviderInterface $fileProvider, SerializerInterface $serializer,
+    RequestStack $requestStack // <-- Inyectar aquí
+)
     {
         $this->document = $document;
         $this->document->setDocumentType(Invoice::class);
         $this->config = $config;
         $this->fileProvider = $fileProvider;
         $this->serializer = $serializer;
+        $this->requestStack = $requestStack; // <-- Asignar el valor
+    }
+
+    private function logging()
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        $data = json_decode($request->getContent(), true); 
+        error_log(json_encode([
+            'request_data' => $data
+        ], JSON_PRETTY_PRINT));   
     }
 
     /**
@@ -71,6 +85,7 @@ class InvoiceController extends AbstractController
      */
     public function send(): Response
     {
+        $this->logging();
         return $this->document->send();
     }
 

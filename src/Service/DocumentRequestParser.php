@@ -46,6 +46,9 @@ class DocumentRequestParser implements RequestParserInterface
             );
         }
 
+        // error_log(json_encode([
+        //     'request_data' => $dataJson
+        // ], JSON_PRETTY_PRINT));   
         return $this->serializer->deserialize(
             $data,
             $class,

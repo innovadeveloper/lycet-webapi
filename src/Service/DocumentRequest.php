@@ -70,8 +70,8 @@ class DocumentRequest implements DocumentRequestInterface
      */
     public function send(): Response
     {
-       $document = $this->getDocument();
-
+        $document = $this->getDocument();
+        
         /**@var $errors array */
 //        $errors = $this->validator->validate($document);
 //        if (count($errors)) {
